@@ -260,4 +260,149 @@
         el.style.top = originY + 'px';
         el.style.fontSize = (16 + Math.random() * 16) + 'px';
         el.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
-        el.style.animatio
+        el.style.animationDelay = (Math.random() * 0.3) + 's';
+        container.appendChild(el);
+        el.addEventListener('animationend', () => el.remove());
+      }
+    }
+
+    // Interactive click handlers
+    const confettiZone = document.getElementById('confettiZone');
+
+    document.getElementById('cakeBtn').addEventListener('click', function(e) {
+      const rect = confettiZone.getBoundingClientRect();
+      const btnRect = this.getBoundingClientRect();
+      const x = btnRect.left - rect.left + btnRect.width / 2;
+      const y = btnRect.top - rect.top;
+      spawnParticles(confettiZone, ['🎉', '🎊', '✨', '🥳', '🎂', '🍰', '🎁', '💫', '⭐'], 15, x, y);
+    });
+
+    document.getElementById('btn-balloon').addEventListener('click', function(e) {
+      const rect = confettiZone.getBoundingClientRect();
+      const btnRect = this.getBoundingClientRect();
+      const x = btnRect.left - rect.left + btnRect.width / 2;
+      const y = btnRect.top - rect.top;
+      spawnParticles(confettiZone, ['🎈', '🫧', '🎈', '🪅', '🎈'], 10, x, y);
+    });
+
+    document.getElementById('btn-heart').addEventListener('click', function(e) {
+      const rect = confettiZone.getBoundingClientRect();
+      const btnRect = this.getBoundingClientRect();
+      const x = btnRect.left - rect.left + btnRect.width / 2;
+      const y = btnRect.top - rect.top;
+      spawnParticles(confettiZone, ['❤️', '💕', '💖', '💗', '💝', '🥰', '💜', '💙'], 12, x, y);
+    });
+
+    document.getElementById('btn-star').addEventListener('click', function(e) {
+      const rect = confettiZone.getBoundingClientRect();
+      const btnRect = this.getBoundingClientRect();
+      const x = btnRect.left - rect.left + btnRect.width / 2;
+      const y = btnRect.top - rect.top;
+      spawnParticles(confettiZone, ['⭐', '🌟', '✨', '💫', '🌠', '🌈'], 10, x, y);
+    });
+
+    // Element SDK
+    function applyConfig(config) {
+      const c = { ...defaultConfig, ...config };
+
+      document.getElementById('recipientName').textContent = c.recipient_name || defaultConfig.recipient_name;
+      document.getElementById('mainGreeting').textContent = c.main_greeting || defaultConfig.main_greeting;
+      document.getElementById('heartfeltMessage').textContent = c.heartfelt_message || defaultConfig.heartfelt_message;
+      document.getElementById('partyDate').textContent = c.invitation_date || defaultConfig.invitation_date;
+      document.getElementById('partyTime').textContent = c.invitation_time || defaultConfig.invitation_time;
+      document.getElementById('partyVenue').textContent = c.invitation_venue || defaultConfig.invitation_venue;
+
+      // Colors
+      const bg = c.background_color || defaultConfig.background_color;
+      const surface = c.surface_color || defaultConfig.surface_color;
+      const textCol = c.text_color || defaultConfig.text_color;
+      const primary = c.primary_action_color || defaultConfig.primary_action_color;
+      const secondary = c.secondary_action_color || defaultConfig.secondary_action_color;
+
+      document.getElementById('app-wrapper').style.background = bg;
+      document.getElementById('grad-stop1').style.stopColor = bg;
+      document.getElementById('grad-stop2').style.stopColor = surface;
+      document.getElementById('grad-stop4').style.stopColor = bg;
+
+      document.getElementById('mainGreeting').style.color = '#fff';
+      document.getElementById('mainGreeting').style.textShadow = `0 0 30px ${primary}40`;
+      document.getElementById('heartfeltMessage').style.color = textCol;
+      document.getElementById('partyDate').style.color = textCol;
+      document.getElementById('partyTime').style.color = textCol;
+      document.getElementById('partyVenue').style.color = textCol;
+
+      document.getElementById('card-container').style.borderColor = `${primary}33`;
+      document.getElementById('card-container').style.boxShadow = `0 0 60px ${secondary}26, 0 0 120px ${primary}1a`;
+
+      // Font
+      const font = c.font_family || defaultConfig.font_family;
+      const baseStack = 'Georgia, serif';
+      const bodyStack = 'Quicksand, sans-serif';
+      document.getElementById('recipientName').style.fontFamily = `${font}, ${baseStack}`;
+      document.getElementById('mainGreeting').style.fontFamily = `${font}, ${baseStack}`;
+
+      // Font size
+      const baseSize = c.font_size || defaultConfig.font_size;
+      document.getElementById('mainGreeting').style.fontSize = `${baseSize * 2.8}px`;
+      document.getElementById('recipientName').style.fontSize = `${baseSize * 2}px`;
+      document.getElementById('heartfeltMessage').style.fontSize = `${baseSize}px`;
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          applyConfig(config);
+        },
+        mapToCapabilities: (config) => {
+          const c = { ...defaultConfig, ...config };
+          return {
+            recolorables: [
+              {
+                get: () => c.background_color || defaultConfig.background_color,
+                set: (v) => { c.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+              },
+              {
+                get: () => c.surface_color || defaultConfig.surface_color,
+                set: (v) => { c.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+              },
+              {
+                get: () => c.text_color || defaultConfig.text_color,
+                set: (v) => { c.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+              },
+              {
+                get: () => c.primary_action_color || defaultConfig.primary_action_color,
+                set: (v) => { c.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); }
+              },
+              {
+                get: () => c.secondary_action_color || defaultConfig.secondary_action_color,
+                set: (v) => { c.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => c.font_family || defaultConfig.font_family,
+              set: (v) => { c.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+            },
+            fontSizeable: {
+              get: () => c.font_size || defaultConfig.font_size,
+              set: (v) => { c.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+            }
+          };
+        },
+        mapToEditPanelValues: (config) => {
+          const c = { ...defaultConfig, ...config };
+          return new Map([
+            ['recipient_name', c.recipient_name || defaultConfig.recipient_name],
+            ['main_greeting', c.main_greeting || defaultConfig.main_greeting],
+            ['heartfelt_message', c.heartfelt_message || defaultConfig.heartfelt_message],
+            ['invitation_date', c.invitation_date || defaultConfig.invitation_date],
+            ['invitation_time', c.invitation_time || defaultConfig.invitation_time],
+            ['invitation_venue', c.invitation_venue || defaultConfig.invitation_venue]
+          ]);
+        }
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9decb84952d6ce32',t:'MTc3MzkyNTg1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
